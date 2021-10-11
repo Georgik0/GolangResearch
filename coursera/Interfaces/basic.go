@@ -1,6 +1,8 @@
 package Interfaces
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Payer interface {
 	Pay(int) error
@@ -25,9 +27,23 @@ func Buy(p Payer) {
 	}
 }
 
-//func main() {
-//	myWallet := &Wallet{Cash: 100}
-//	fmt.Printf("myWallet = %v\ttype: %[1]T\n", myWallet)
-//	Buy(myWallet)
-//	fmt.Println(myWallet)
-//}
+func Buy_empty(in interface{}) {
+	var p Payer
+	var ok bool
+	fmt.Printf("p: %T, %[1]v\n", p)
+	//p = &Wallet{100}
+	if p, ok = in.(Payer); !ok {
+		fmt.Printf("ok: %v; %T не является интерфейсом %v\n\n", ok, in, p)
+	} else {
+		fmt.Printf("%T интерфейс Payer\n\n", in)
+	}
+}
+
+func TestInterf() {
+	var emptyItf Payer
+	var wallet = Wallet{23}
+	emptyItf = &Wallet{100}
+	fmt.Printf("empty_itf: %v   %[1]T\n", emptyItf)
+	emptyItf = &wallet
+	fmt.Printf("empty_itf: %v   %[1]T", emptyItf)
+}

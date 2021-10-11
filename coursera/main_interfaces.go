@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"GolangResearch/coursera/Interfaces"
+	"fmt"
 )
 
 func main() {
@@ -20,4 +20,11 @@ func main() {
 	var someWallet Interfaces.Wallet = Interfaces.Wallet{100} // другой (полный) вариант объявления переменной
 	fmt.Printf("\nRaw payment : %#v\n", someWallet)
 	fmt.Printf("Raw payment : %s\n", someWallet)
+
+	Interfaces.Buy_empty("string")
+	Interfaces.Buy_empty(123)
+	Interfaces.Buy_empty(someWallet)
+	Interfaces.Buy_empty(AppleWallet)
+
+	Interfaces.TestInterf()
 }
