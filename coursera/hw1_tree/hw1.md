@@ -23,8 +23,7 @@ go run main.go . -f
 ├───main.go (1881b)
 ├───main_test.go (1318b)
 └───testdata
-	├───project
-	│	├───file.txt (19b)
+	├───project│	├───file.txt (19b)
 	│	└───gopher.png (70372b)
 	├───static
 	│	├───css
