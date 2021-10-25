@@ -2,6 +2,20 @@ package main
 
 import "fmt"
 
+type vectorInt []int
+
+func (s *vectorInt) Pushback(a int) {
+	*s = append(*s, a)
+}
+
+func getSliceInt(vec vectorInt) []int {
+	out := []int{}
+	for _, val := range vec {
+		out = append(out, val)
+	}
+	return out
+}
+
 type Vector []interface{}
 
 func (v *Vector) Pushback(elem interface{})  {
@@ -47,13 +61,21 @@ func main() {
 	result_vec = reversString([]string{"1", "2", "3"})
 	fmt.Printf("result: %v  %[1]T\n", result_vec)
 
-	a := Vector{1, 2, 3}
-	b := a
-	b[1] = 9
-	fmt.Printf("%v\t%[1]T\n", a)
-	fmt.Printf("%v\t%[1]T\n", b)
-	c := Vector{int16(11), int16(12), int16(13)}
-	fmt.Printf("%v\t%[1]T\n", c)
-	c.Pushback(123)
-	fmt.Printf("%v\t%[1]T\ttype c[0]: %T\n", c, c[3])
+	{
+		a := Vector{1, 2, 3}
+		b := a
+		b[1] = 9
+		fmt.Printf("%v\t%[1]T\n", a)
+		fmt.Printf("%v\t%[1]T\n", b)
+		c := Vector{int16(11), int16(12), int16(13)}
+		fmt.Printf("%v\t%[1]T\n", c)
+		c.Pushback(123)
+		fmt.Printf("%v\t%[1]T\ttype c[0]: %T\n", c, c[3])
+	}
+	{
+		a := []int{0,1,2,3,4,5,6}
+		fmt.Println("len = ", len(a), a[:(len(a)-1)])
+	}
+
+
 }
