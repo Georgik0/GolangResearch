@@ -54,21 +54,14 @@ func (t *stack_tree)back() {
 	*t = (*t)[:(len(*t) - 1)]
 }
 
-func (t *BinaryTree)countDeep(prevDeep int) int {
-	if t.left == nil && t.right == nil {
-		return 1
-	}
-}
-
-func (t *BinaryTree)checkBalanced(prevDeep int) bool {
-	deep := 0
-	if t.left == nil && t.right == nil {
-		return false
-	}
-	if t.left == nil && t.right != nil {
-
-	}
-}
+//func (t *BinaryTree)checkBalanced(prevDeep int) bool {
+//	if t.left == nil && t.right == nil {
+//		return false
+//	}
+//	if t.left == nil && t.right != nil {
+//
+//	}
+//}
 
 func main() {
 	node := &BinaryTree{value: 1}
