@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"log"
+	"os"
 )
 
 func main() {
@@ -14,4 +14,8 @@ func main() {
 	}
 	defer fd.Close()
 	scanner := bufio.NewScanner(fd)
+	for scanner.Scan() {
+		text := scanner.Text()
+		fmt.Printf("%T\t%[1]v\n", text)
+	}
 }
