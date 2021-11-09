@@ -17,8 +17,8 @@ func Inflight(list []int, flightLength int) bool {
 			if	val2 + val1 == flightLength {
 				return true
 			}
+			}
 		}
-	}
 	return false
 }
 
