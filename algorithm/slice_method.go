@@ -51,6 +51,11 @@ func reversString(list []string) []string {
 	return out
 }
 
+func deleteElem(arr *[]int) {
+	*arr = (*arr)[1:]
+	fmt.Println("after delete:", arr)
+}
+
 func main() {
 	result_vec := reversString([]string{"1","2","3","4"})
 	fmt.Printf("result: %v  %[1]T\n", result_vec)
@@ -75,7 +80,8 @@ func main() {
 	{
 		a := []int{0,1,2,3,4,5,6}
 		fmt.Println("len = ", len(a), a[:(len(a)-1)])
+		fmt.Println("a:", a)
+		deleteElem(&a)
+		fmt.Println("a:", a)
 	}
-
-
 }

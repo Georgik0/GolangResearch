@@ -87,6 +87,14 @@ func checkAll(t *BinaryTree, i int) {
 		fmt.Println(i, "not balanced")
 	}
 }
+//func (t *BinaryTree)checkBalanced(prevDeep int) bool {
+//	if t.left == nil && t.right == nil {
+//		return false
+//	}
+//	if t.left == nil && t.right != nil {
+//
+//	}
+//}
 
 func main() {
 	node := &BinaryTree{value: 1}
