@@ -44,6 +44,4 @@ func main() {
 	fmt.Println(a)
 	sets := getSets(a, []int{})
 	fmt.Println(sets)
-	//test(a)
-	//fmt.Println(a)
 }
