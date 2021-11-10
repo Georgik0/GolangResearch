@@ -41,15 +41,8 @@ func Add_users() {
 		/*connStr := "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable"
 		db, err := sql.Open("postgres", connStr)*/
 		db, err := sqlx.Connect("postgres", "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable")
-		//if err != nil {
-		//	log.Fatalln(err)
-		//} else {
-		//	for {
-		//		fmt.Fprintln(w, "connect with mysql")
-		//	}
-		//}
 		defer db.Close()
-		//err = db.Ping()
+		err = db.Ping()
 		if err != nil {
 			fmt.Fprintln(w, "No connect with mysql")
 			return

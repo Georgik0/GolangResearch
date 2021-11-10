@@ -6,38 +6,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-#    image: docker-gs-ping
     ports:
       - 9000:9000
-#    networks:
-#      - mynet
-#    links:
-#      - db
-#    depends_on:
-#      - database
-
-#  db:
-#    #    restart: always
-#    image: mariadb
-#    container_name: myapp_db
-#    environment:
-#      - MYSQL_USER=db_user
-#      - MYSQL_PASSWORD=db_user_pass
-#      - MYSQL_DATABASE=app_db
-#      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-#    ports:
-#      - 3306:3306
-#    volumes:
-#      - ./mysql-dump:/docker-entrypoint-initdb.d
-##    volumes:
-##      - dbdata:/var/lib/mysql
 
   db:
     image: postgres
     container_name: myapp_db
     restart: always
     volumes:
-      - ./mysql-dump:/docker-entrypoint-initdb.d
+      - ./postgres-dump:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     environment:
@@ -46,7 +23,7 @@ services:
       - POSTGRES_DB=app_db
 
 volumes:
-  mysql-dump:
+  postgres-dump:
 
 #volumes:
 #  dbdata:
