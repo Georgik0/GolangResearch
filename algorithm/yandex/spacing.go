@@ -18,11 +18,22 @@ func dist(a_i int, S []int) {
 }
 
 func genericS(arr []int, index int, k int) {
-	var p int
-	for i := 0; i < k; i++ {
-
+	init := []int{}
+	for i, _ := range init {
+		if i < k {
+			init[i] = 1
+		} else {
+			init[i] = 0
+		}
 	}
-	S := append(arr[:p], )
+	n := len(arr)
+	for {
+		cur_id := 0
+		unit := 0
+		for i := 0; i < k; i++ {
+
+		}
+	}
 }
 
 func main() {
