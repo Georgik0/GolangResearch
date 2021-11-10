@@ -1,0 +1,65 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  go:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+#    image: docker-gs-ping
+    ports:
+      - 9000:9000
+#    networks:
+#      - mynet
+    links:
+      - db
+#    depends_on:
+#      - database
+#    networks:
+#      - mynet
+
+#  db:
+#    #    restart: always
+#    image: mariadb
+#    container_name: myapp_db
+#    environment:
+#      - MYSQL_USER=db_user
+#      - MYSQL_PASSWORD=db_user_pass
+#      - MYSQL_DATABASE=app_db
+#      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+#    ports:
+#      - 3306:3306
+#    volumes:
+#      - ./mysql-dump:/docker-entrypoint-initdb.d
+##    volumes:
+##      - dbdata:/var/lib/mysql
+
+  db:
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    container_name: myapp_db
+#    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+#    networks:
+#      - mynet
+    environment:
+      - MYSQL_USER=db_user
+      - MYSQL_PASSWORD=db_user_pass
+      - MYSQL_DATABASE=app_db
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+#      MYSQL_ROOT_PASSWORD: password
+#      MYSQL_USER: skitsch
+#      MYSQL_PASSWORD: 228
+#      MYSQL_DATABASE: avito
+#      MYSQL_ROOT_PASSWORD: example
+#      MYSQL_DATABASE: ecommerce
+#networks:
+#  mynet:
+#    driver: "bridge"
+
+#volumes:
+#  dbdata:
+# docker exec -it id_cont bash

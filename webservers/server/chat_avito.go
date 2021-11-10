@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 /* Добавить нового пользователя
@@ -33,6 +35,16 @@ func Add_users() {
 			return
 		}
 		/* Здесь нужно добавить пользователя */
+		db, err := sql.Open("mysql", "db_user:db_user_pass@tcp(myapp_db)/app_db")
+		defer db.Close()
+		err = db.Ping()
+		if err != nil {
+			fmt.Fprintln(w, "No connect with mysql")
+			return
+		} else {
+			fmt.Fprintln(w,"Get connect mysql")
+		}
+
 		fmt.Fprintf(w, "id созданного пользователя: %v\n", id)
 		id++
 	})
