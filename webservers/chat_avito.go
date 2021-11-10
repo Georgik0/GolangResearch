@@ -1,12 +1,14 @@
 package main
 
 import (
+	//"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/jmoiron/sqlx"
+	//_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"io/ioutil"
 	"net/http"
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 /* Добавить нового пользователя
@@ -17,9 +19,9 @@ curl --header "Content-Type: application/json" \
 */
 
 type User struct {
-	Id int	`json:"-"`
+	Id       int    `json:"-"`
 	Username string `json:"username"`
-	Created int `json:"-"`
+	Created  int    `json:"-"`
 }
 
 func Add_users() {
@@ -35,20 +37,31 @@ func Add_users() {
 			return
 		}
 		/* Здесь нужно добавить пользователя */
-		db, err := sql.Open("mysql", "db_user:db_user_pass@tcp(myapp_db)/app_db")
+		//db, err := sql.Open("postgres", "postgresql://db_user:db_user_pass@postgres(myapp_db)/app_db")
+		/*connStr := "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable"
+		db, err := sql.Open("postgres", connStr)*/
+		db, err := sqlx.Connect("postgres", "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable")
+		//if err != nil {
+		//	log.Fatalln(err)
+		//} else {
+		//	for {
+		//		fmt.Fprintln(w, "connect with mysql")
+		//	}
+		//}
 		defer db.Close()
-		err = db.Ping()
+		//err = db.Ping()
 		if err != nil {
 			fmt.Fprintln(w, "No connect with mysql")
 			return
 		} else {
-			fmt.Fprintln(w,"Get connect mysql")
+			fmt.Fprintln(w, "Get connect mysql")
 		}
 
 		fmt.Fprintf(w, "id созданного пользователя: %v\n", id)
 		id++
 	})
 }
+
 /*------------------------------------------------------------------------*/
 
 /* Создать новый чат между пользователями
@@ -59,10 +72,10 @@ curl --header "Content-Type: application/json" \
 */
 
 type Chat struct {
-	Id int `json:"-"`
-	Name string `json:"name"`
-	Users []string `json:"users"`
-	Created_at int `json:"-"`
+	Id         int      `json:"-"`
+	Name       string   `json:"name"`
+	Users      []string `json:"users"`
+	Created_at int      `json:"-"`
 }
 
 func Create_chat() {
@@ -83,6 +96,7 @@ func Create_chat() {
 		id++
 	})
 }
+
 /*------------------------------------------------------------------------*/
 
 /* Отправить сообщение в чат от лица пользователя
@@ -93,11 +107,11 @@ curl --header "Content-Type: application/json" \
 */
 
 type Message struct {
-	Id int `json:"-"`
-	Chat string `json:"chat"` // ссылка на идентификатор чата, в который было отправлено сообщение
-	Author string `json:"author"` // ссылка на идентификатор отправителя сообщения, отношение многие-к-одному
-	Text string `json:"text"` // текст отправленного сообщения
-	Created_at int `json:"-"` // время создания
+	Id         int    `json:"-"`
+	Chat       string `json:"chat"`   // ссылка на идентификатор чата, в который было отправлено сообщение
+	Author     string `json:"author"` // ссылка на идентификатор отправителя сообщения, отношение многие-к-одному
+	Text       string `json:"text"`   // текст отправленного сообщения
+	Created_at int    `json:"-"`      // время создания
 }
 
 func Message_add() {
@@ -119,6 +133,7 @@ func Message_add() {
 		id++
 	})
 }
+
 /*------------------------------------------------------------------------*/
 
 /* Получить список чатов конкретного пользователя
@@ -148,6 +163,7 @@ func Get_slice_chats() {
 		/* Здесь нужно получить список чатов этого пользователя из бд */
 	})
 }
+
 /*------------------------------------------------------------------------*/
 
 /* Получить список сообщений в конкретном чате
