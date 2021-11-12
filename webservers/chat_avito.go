@@ -25,7 +25,6 @@ type User struct {
 }
 
 func Add_users() {
-	id := 0 // где-то сохранить id последнего пользователя (чтобы не терялся при перезапуске программы)
 	http.HandleFunc("/users/add", func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -42,16 +41,16 @@ func Add_users() {
 		db, err := sql.Open("postgres", connStr)*/
 		db, err := sqlx.Connect("postgres", "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable")
 		defer db.Close()
-		err = db.Ping()
+
+		var id int
+		err = db.QueryRow("insert into user (username) values ($1) return index", "Skitsch").Scan(&id)
+		//err = db.Ping()
 		if err != nil {
 			fmt.Fprintln(w, "No connect with mysql")
 			return
 		} else {
-			fmt.Fprintln(w, "Get connect mysql")
+			fmt.Fprintln(w, id, "созданного пльзователя")
 		}
-
-		fmt.Fprintf(w, "id созданного пользователя: %v\n", id)
-		id++
 	})
 }
 

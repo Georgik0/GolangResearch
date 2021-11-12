@@ -10,11 +10,14 @@ services:
       - 9000:9000
 
   db:
+    build: ./db
     image: postgres
     container_name: myapp_db
     restart: always
     volumes:
-      - ./postgres-dump:/docker-entrypoint-initdb.d
+      - ./data:/var/lib/postgresql/data
+#      - ./data:/data
+#      - ./postgres-dump:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     environment:
@@ -22,8 +25,11 @@ services:
       - POSTGRES_PASSWORD=db_user_pass
       - POSTGRES_DB=app_db
 
-volumes:
-  postgres-dump:
+#volumes:
+#  postgres-dump:
+
+#volumes:
+#  data:
 
 #volumes:
 #  dbdata:

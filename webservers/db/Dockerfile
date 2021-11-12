@@ -1,8 +1,11 @@
-FROM mysql:5.7
+FROM postgres:alpine
 
-VOLUME ["/var/lib/mysql"]
+COPY scripts/init.sql /docker-entrypoint-initdb.d/
 
-RUN sed -i "s/^user.*/user = root/g" /etc/mysql/my.cnf
+#COPY scripts/setup.sh ./
 
-RUN chown -R mysql /var/lib/mysql
-RUN chgrp -R mysql /var/lib/mysql
+#RUN chmod a+r /docker-entrypoint-initdb.d/*
+
+EXPOSE 5432
+
+#CMD sh setup.sh
