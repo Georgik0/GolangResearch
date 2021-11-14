@@ -3,8 +3,9 @@ FROM golang:1.17.2-alpine
 WORKDIR /app
 
 COPY go.mod ./
-RUN go get github.com/lib/pq
-RUN go get github.com/jmoiron/sqlx
+#RUN go get github.com/lib/pq
+RUN go get "github.com/jackc/pgx/v4"
+RUN #go get github.com/jmoiron/sqlx
 RUN go mod download
 
 

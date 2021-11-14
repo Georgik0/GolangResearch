@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
+	"github.com/jackc/pgx/v4"
+	//"github.com/jmoiron/sqlx"
 	//"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	//_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
+	//_ "github.com/lib/pq"
 	"io/ioutil"
 	"net/http"
 )
@@ -37,16 +39,27 @@ func Add_users() {
 		}
 		/* Здесь нужно добавить пользователя */
 		//db, err := sql.Open("postgres", "postgresql://db_user:db_user_pass@postgres(myapp_db)/app_db")
-		/*connStr := "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable"
-		db, err := sql.Open("postgres", connStr)*/
-		db, err := sqlx.Connect("postgres", "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable")
-		defer db.Close()
-
-		var id int
-		err = db.QueryRow("insert into user (username) values ($1) return index", "Skitsch").Scan(&id)
+		//connStr := "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable"
+		//db, err := sql.Open("postgres", connStr)
+		//db, err := sqlx.Connect("postgres", "user=db_user password=db_user_pass host=myapp_db dbname=app_db sslmode=disable")
+		//defer db.Close()
+		//err = db.QueryRow("insert into user (username) values ($1) return index", "Skitsch").Scan(&id)
 		//err = db.Ping()
+
+		conn, err := pgx.Connect(context.Background(), "postgres://db_user:db_user_pass@myapp_db:5432/app_db")
+		defer conn.Close(context.Background())
+
+		var id int = 0
+		//err = conn.Ping(context.Background())
+		//if _, err_exec := conn.Exec(context.Background(), "insert into my_user (username) values ($1)", "Skitsch"); err_exec != nil {
+		//	fmt.Fprintln(w, "Good insert!")
+		//} else {
+		//	fmt.Fprintln(w, "Bad insert(")
+		//}
+		err = conn.QueryRow(context.Background(), "insert into my_user (username) values ($1) returning id", "Skitsch").Scan(&id)
 		if err != nil {
-			fmt.Fprintln(w, "No connect with mysql")
+			fmt.Fprintln(w, "Bad insert(")
+			//fmt.Fprintln(w, "No connect with mysql")
 			return
 		} else {
 			fmt.Fprintln(w, id, "созданного пльзователя")
