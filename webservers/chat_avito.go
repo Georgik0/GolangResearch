@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"github.com/jackc/pgx/v4"
+	"strconv"
+
 	//"github.com/jmoiron/sqlx"
 	//"database/sql"
 	"encoding/json"
@@ -48,21 +51,21 @@ func Add_users() {
 
 		conn, err := pgx.Connect(context.Background(), "postgres://db_user:db_user_pass@myapp_db:5432/app_db")
 		defer conn.Close(context.Background())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
 
 		var id int = 0
 		//err = conn.Ping(context.Background())
-		//if _, err_exec := conn.Exec(context.Background(), "insert into my_user (username) values ($1)", "Skitsch"); err_exec != nil {
-		//	fmt.Fprintln(w, "Good insert!")
-		//} else {
-		//	fmt.Fprintln(w, "Bad insert(")
-		//}
-		err = conn.QueryRow(context.Background(), "insert into my_user (username) values ($1) returning id", "Skitsch").Scan(&id)
+		//if _, err_exec := conn.Exec(context.Background(), "insert into my_user (username) values ($1)", "Skitsch");
+		err = conn.QueryRow(context.Background(), "insert into my_user (username) values ($1) returning id", p.Username).Scan(&id)
 		if err != nil {
-			fmt.Fprintln(w, "Bad insert(")
-			//fmt.Fprintln(w, "No connect with mysql")
+			http.Error(w, err.Error(), 500)
+			//fmt.Fprintln(w, "Bad insert(")
 			return
 		} else {
-			fmt.Fprintln(w, id, "созданного пльзователя")
+			fmt.Fprintln(w, "Id созданного пльзователя", id)
 		}
 	})
 }
@@ -76,15 +79,50 @@ curl --header "Content-Type: application/json" \
   http://localhost:9000/chats/add
 */
 
+func checkUsers(users []int, ctx context.Context, conn *pgx.Conn, w http.ResponseWriter) error {
+	var err error
+	var check bool = true
+	for _, user := range users {
+		err = conn.QueryRow(ctx, "select exists(select 1 from my_user where id = ($1))", user).Scan(&check)
+		if check == false {
+			//fmt.Fprintf(w, "User id = %v\n", user)
+			err = errors.New("User with id = " + strconv.Itoa(user) + " does not exist")
+			return err
+		}
+	}
+	return nil
+}
+
+func fillChatUser(users []int, chat_id int, ctx context.Context, conn *pgx.Conn) error {
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	for _, user_id := range users {
+		_, err = tx.Exec(ctx,"insert into chat_user (user_id, chat_id) values ($1, $2)", user_id, chat_id)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type Chat struct {
 	Id         int      `json:"-"`
 	Name       string   `json:"name"`
-	Users      []string `json:"users"`
+	Users      []int 	`json:"users"`
 	Created_at int      `json:"-"`
 }
 
 func Create_chat() {
-	id := 0
 	http.HandleFunc("/chats/add", func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -96,9 +134,33 @@ func Create_chat() {
 			return
 		}
 		fmt.Fprintln(w, "Chat: ", p)
+
 		/* Здесь нужно добавить чат в бд */
-		fmt.Fprintf(w, "id созданного чата: %v\n", id)
-		id++
+		conn, err := pgx.Connect(context.Background(), "postgres://db_user:db_user_pass@myapp_db:5432/app_db")
+		defer conn.Close(context.Background())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		if err = checkUsers(p.Users, context.Background(), conn, w); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		//return
+		var id int
+		err = conn.QueryRow(context.Background(), "insert into chat (name) values ($1) returning id", p.Name).Scan(&id)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		} else {
+			fmt.Fprintln(w, "Id созданного чата", id)
+		}
+		if err = fillChatUser(p.Users, id, context.Background(), conn); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
 	})
 }
 
