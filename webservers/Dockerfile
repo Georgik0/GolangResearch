@@ -5,14 +5,14 @@ WORKDIR /app
 COPY go.mod ./
 #RUN go get github.com/lib/pq
 RUN go get "github.com/jackc/pgx/v4"
-RUN #go get github.com/jmoiron/sqlx
+#RUN go get github.com/jmoiron/sqlx
 RUN go mod download
 
 
-COPY chat_avito.go ./
+COPY chat_avito.go checker.go ./
 
-RUN go build -o /docker-gs-ping
+RUN go build -o /chat_avito
 
 EXPOSE 9000
 
-CMD [ "/docker-gs-ping" ]
+CMD [ "/chat_avito" ]

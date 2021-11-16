@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"github.com/jackc/pgx/v4"
 	"strconv"
 
@@ -75,23 +74,9 @@ func Add_users() {
 /* Создать новый чат между пользователями
 curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"name": "chat_1", "users": ["<USER_ID_1>", "<USER_ID_2>"]}' \
+  --data '{"name": "chat_1", "users": [1, 2]}' \
   http://localhost:9000/chats/add
 */
-
-func checkUsers(users []int, ctx context.Context, conn *pgx.Conn, w http.ResponseWriter) error {
-	var err error
-	var check bool = true
-	for _, user := range users {
-		err = conn.QueryRow(ctx, "select exists(select 1 from my_user where id = ($1))", user).Scan(&check)
-		if check == false {
-			//fmt.Fprintf(w, "User id = %v\n", user)
-			err = errors.New("User with id = " + strconv.Itoa(user) + " does not exist")
-			return err
-		}
-	}
-	return nil
-}
 
 func fillChatUser(users []int, chat_id int, ctx context.Context, conn *pgx.Conn) error {
 	tx, err := conn.Begin(ctx)
@@ -143,7 +128,7 @@ func Create_chat() {
 			return
 		}
 
-		if err = checkUsers(p.Users, context.Background(), conn, w); err != nil {
+		if err = CheckUsers(p.Users, context.Background(), conn, w); err != nil {
 			http.Error(w, err.Error(), 500)
 			return
 		}
@@ -169,25 +154,42 @@ func Create_chat() {
 /* Отправить сообщение в чат от лица пользователя
 curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"chat": "<CHAT_ID>", "author": "<USER_ID>", "text": "hi"}' \
+  --data '{"chat": 1, "author": 1, "text": "hi"}' \
   http://localhost:9000/messages/add
 */
 
+/*func fillMessage(ctx context.Context, conn *pgx.Conn, p *Message) error {
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	if _, err = conn.Exec(context.Background(), "insert into message (chat_id, author_id, text) values ($1, $2, $3)",
+		p.Chat_id, p.Author_id, p.Text); err != nil {
+		return err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+*/
 type Message struct {
 	Id         int    `json:"-"`
-	Chat       string `json:"chat"`   // ссылка на идентификатор чата, в который было отправлено сообщение
-	Author     string `json:"author"` // ссылка на идентификатор отправителя сообщения, отношение многие-к-одному
+	Chat_id    int	  `json:"chat"`   // ссылка на идентификатор чата, в который было отправлено сообщение
+	Author_id  int	  `json:"author"` // ссылка на идентификатор отправителя сообщения, отношение многие-к-одному
 	Text       string `json:"text"`   // текст отправленного сообщения
 	Created_at int    `json:"-"`      // время создания
 }
 
 func Message_add() {
-	id := 0
 	http.HandleFunc("/messages/add", func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
 
-		//fmt.Println(string(body))
 		p := &Message{}
 		err = json.Unmarshal(body, p)
 		if err != nil {
@@ -195,9 +197,28 @@ func Message_add() {
 			return
 		}
 		fmt.Fprintln(w, "Message: ", p)
+
 		/* Здесь нужно добавить сообщение в бд */
-		fmt.Fprintf(w, "id отправленного сообщения: %v\n", id)
-		id++
+		conn, err := pgx.Connect(context.Background(), "postgres://db_user:db_user_pass@myapp_db:5432/app_db")
+		defer conn.Close(context.Background())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		if err = CheckMessage(p.Author_id, p.Chat_id, context.Background(), conn); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		var id int
+		if err = conn.QueryRow(context.Background(), "insert into message (chat_id, author_id, text) values ($1, $2, $3) returning id",
+			p.Chat_id, p.Author_id, p.Text).Scan(&id); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		} else {
+			fmt.Fprintln(w, "Id созданного сообщения", id)
+		}
 	})
 }
 
@@ -206,15 +227,15 @@ func Message_add() {
 /* Получить список чатов конкретного пользователя
 curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"user": "<USER_ID>"}' \
+  --data '{"user": 1}' \
   http://localhost:9000/chats/get
 */
 
 type User_chats struct {
-	User string `json:"user"`
+	User int `json:"user"`
 }
 
-func Get_slice_chats() {
+func Get_chats() {
 	http.HandleFunc("/chats/get", func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -227,7 +248,33 @@ func Get_slice_chats() {
 			return
 		}
 		fmt.Fprintln(w, "User: ", p)
+
 		/* Здесь нужно получить список чатов этого пользователя из бд */
+		conn, err := pgx.Connect(context.Background(), "postgres://db_user:db_user_pass@myapp_db:5432/app_db")
+		defer conn.Close(context.Background())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		if err = CheckUsers([]int{p.User}, context.Background(), conn, w); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		if row, err := conn.Query(context.Background(), "SELECT cu.chat_id FROM chat_user cu LEFT JOIN chat c ON c.id=cu.chat_id WHERE cu.user_id = ($1) ORDER BY c.created_at", p.User); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		} else {
+			defer row.Close()
+			fmt.Fprintf(w, "The user's chat_id:")
+			var chat_id int
+			for row.Next() {
+				row.Scan(&chat_id)
+				fmt.Fprintf(w, " " + strconv.Itoa(chat_id))
+			}
+			fmt.Fprintln(w)
+		}
 	})
 }
 
@@ -236,15 +283,20 @@ func Get_slice_chats() {
 /* Получить список сообщений в конкретном чате
 curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"chat": "<CHAT_ID>"}' \
+  --data '{"chat": 1}' \
   http://localhost:9000/messages/get
 */
 
-type Chat_messages struct {
-	Chat string `json:"chat"`
+func selectMessages() error {
+
+	return nil
 }
 
-func Get_slice_messages() {
+type Chat_messages struct {
+	Chat int `json:"chat"`
+}
+
+func Get_messages() {
 	http.HandleFunc("/messages/get", func(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -257,7 +309,32 @@ func Get_slice_messages() {
 			return
 		}
 		fmt.Fprintln(w, "Chat: ", p)
+
 		/* Здесь нужно получить список сообщений этого чата из бд */
+		conn, err := pgx.Connect(context.Background(), "postgres://db_user:db_user_pass@myapp_db:5432/app_db")
+		defer conn.Close(context.Background())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		if err = CheckChats([]int{p.Chat}, context.Background(), conn, w); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		if row, err := conn.Query(context.Background(), "SELECT text FROM message WHERE chat_id = ($1)", p.Chat); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		} else {
+			defer row.Close()
+			fmt.Fprintf(w, "The chat's messages:\n")
+			var text string
+			for row.Next() {
+				row.Scan(&text)
+				fmt.Fprintln(w, text)
+			}
+		}
 	})
 }
 
@@ -265,7 +342,7 @@ func main() {
 	Add_users()
 	Create_chat()
 	Message_add()
-	Get_slice_chats()
-	Get_slice_messages()
+	Get_chats()
+	Get_messages()
 	http.ListenAndServe(":9000", nil)
 }

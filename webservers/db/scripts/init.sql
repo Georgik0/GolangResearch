@@ -1,13 +1,13 @@
 CREATE TABLE my_user (
     id serial PRIMARY KEY,
     username varchar UNIQUE NOT NULL,
-    created_at timestamptz
+    created_at timestamp default current_timestamp
 );
 
 CREATE TABLE chat (
     id serial PRIMARY KEY,
     name varchar UNIQUE NOT NULL,
-    created_at timestamptz
+    created_at timestamp default current_timestamp
 );
 
 CREATE TABLE chat_user (
@@ -24,20 +24,20 @@ CREATE TABLE message (
      author_id integer not null,
      foreign key (author_id) references my_user(id),
      text varchar,
-     created_at timestamptz
+     created_at timestamp default current_timestamp
 );
 
-CREATE TABLE chat_message
+/*CREATE TABLE chat_message
 (
     id         integer PRIMARY KEY,
     chat_id integer not null,
     foreign key (chat_id) references chat(id),
     message_id integer not null,
     foreign key (message_id) references message(id)
-);
+);*/
 
-CREATE TABLE user_message (
+/*CREATE TABLE user_message (
     id integer PRIMARY KEY,
     message_id integer not null,
     foreign key (message_id) references message(id)
-);
+);*/
