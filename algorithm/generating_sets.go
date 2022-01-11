@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "fmt"
 
 /*
 1234
@@ -22,7 +19,7 @@ import (
 
 */
 
-func getSets(a []int, current []int) []([]int) {
+/*func getSets(a []int, current []int) []([]int) {
 	sets := []([]int){}
 	for i, val := range a {
 		send := append(current, val)
@@ -44,4 +41,48 @@ func main() {
 	fmt.Println(a)
 	sets := getSets(a, []int{})
 	fmt.Println(sets)
+}*/
+
+var all_sets = []([]int){}
+
+func gen(a, current []int) {
+	tmp := make([]int, len(current))
+	copy(tmp, current)
+	all_sets = append(all_sets, tmp)
+	for id, val := range a {
+		current = append(current, val)
+		gen(a[id+1:], current)
+		current = current[:len(current)-1]
+	}
+}
+
+var all_perm = []([]int){}
+var length int = -1
+
+func permutation(a []int, chosen_id int) {
+	if length == -1 {
+		length = len(a)
+	}
+	for id, val := range a {
+		tmp = append(tmp, val)
+		if len(tmp) == length {
+			all_perm = append(all_perm, tmp)
+		}
+	}
+}
+
+func main() {
+	a := []int{1, 2, 3}
+
+	fmt.Println("subsets:")
+	gen(a, []int{})
+	for _, val := range all_sets {
+		fmt.Println(val)
+	}
+
+	fmt.Println("permutation:")
+	permutation(a, []int{})
+	for _, val := range all_perm {
+		fmt.Println(val)
+	}
 }
