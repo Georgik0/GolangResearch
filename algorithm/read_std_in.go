@@ -11,7 +11,7 @@ func main() {
 
 	/* read line */
 	{
-		fd, err := os.Open("./data")
+		fd, err := os.Open("./data") // reader := bufio.NewReader(os.Stdin) - чтобы читать с Stdin
 		if err != nil {
 			log.Fatal(err)
 		}

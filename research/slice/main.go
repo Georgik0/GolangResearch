@@ -1,6 +1,8 @@
 package main
 
 import (
+	ptr_on_slice_element "GolangResearch/research/slice/ptr-on-slice-element"
+	"GolangResearch/research/slice/tricks"
 	"fmt"
 	"sort"
 )
@@ -27,9 +29,52 @@ func (m *metricsProvider) View() {
 }
 
 func main() {
-	test1()
+	//test1()
+	//tricks.ResearchCopy()
+	//tricks.DelWithCopy()
+	//test4()
+	//slicecase1.CheckNil()
+	//test5()
+	//test6()
+	//slicecase1.CheckLen0()
+	ptr_on_slice_element.Check()
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+func test6() {
+	fmt.Println("test6")
+
+	arr := []int{1, 2, 3, 4, 5, 6}
+	var arrDel []int
+	arrDel = tricks.DeleteElementFromSlice(arr, 5)
+	fmt.Println(arrDel, " cap: ", cap(arrDel), "len: ", len(arrDel))
+	fmt.Println()
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+func test5() {
+	fmt.Println("test5")
+
+	arr := []int{1, 2, 3, 4, 5, 6}
+	var arrDel []int
+	arrDel = tricks.DelWithCopy(arr, 5)
+	fmt.Println(arrDel[:cap(arr)], " cap: ", cap(arrDel), "len: ", len(arrDel))
+	fmt.Println(arrDel)
+	fmt.Println()
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+func test4() {
+	arr := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	changeSlice(arr)
+	fmt.Println(arr)
+}
+
+func changeSlice(arr []int) {
+	arr = arr[1:4]
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 func test3() {
 	arr1 := []int{1, 2, 3, 4, 5}
 	arr2 := []int{11, 22, 33, 44, 55}
@@ -38,12 +83,14 @@ func test3() {
 	fmt.Println(arr3)
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 func test2() {
 	arr := []int{1, 1, 1, 2, 2, 3, 3, 4, 1, 2, 3, 4, 1, 1, 2, 2, 3, 4, 4, 3}
 	researchSort(arr)
 	fmt.Println(arr)
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 func test1() {
 	mp := InitMetricsProvider()
 

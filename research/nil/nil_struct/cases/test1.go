@@ -1,13 +1,6 @@
-package main
+package cases
 
-import (
-	"fmt"
-)
-
-func main() {
-	//problemNIL(nil)
-	nilInterface()
-}
+import "fmt"
 
 func nilInterface() {
 	m := make(map[int]interface{})
@@ -49,6 +42,7 @@ type testNil struct {
 
 func (t *testNil) checker() {
 	if t == nil {
+		fmt.Println("t == nil - true")
 		return
 	}
 	fmt.Println(t.s)
@@ -63,4 +57,8 @@ func problemNIL(tI testNilI) {
 		fmt.Println("BEDA")
 	}
 	tI.checker()
+}
+
+func CheckTestNIL() {
+	initT().checker()
 }

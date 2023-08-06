@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type (
@@ -17,6 +18,11 @@ type (
 )
 
 func main() {
+	//transformGl()
+	researchImplement()
+}
+
+func transformGl() {
 	s := someType{t2: type2{
 		"1": "1",
 		"2": "2",
@@ -32,10 +38,50 @@ func transform[T any](s someType) T {
 }
 
 func funcInInterface[T any](f T) {
-	var zero interface{}
-	var someFunc func()
+	// ERROR compile
 
-	switch someFunc.(type) {
+	//var zero interface{}
+	//var someFunc func()
+	//
+	//switch someFunc.(type) {
+	//default:
+	//	return
+	//}
+}
 
+type checker struct {
+	a int
+}
+
+func (c *checker) write() {
+	fmt.Println(c.a)
+}
+
+type checkerI interface {
+	write()
+}
+
+func researchImplement() {
+	a1 := int32(5)
+	implementNilType(a1)
+
+	a2 := int32(5)
+	implementNilType(&a2)
+
+	i := interface{}(&a2)
+	implementNilType(i)
+
+	c := checkerI(&checker{a: 5})
+	implementNilType(c)
+}
+
+func implementNilType[T any](v T) {
+	fmt.Println(v)
+	switch reflect.ValueOf(v).Kind() {
+	case reflect.Ptr:
+		fmt.Println("Its pointer")
+	default:
+		fmt.Println("Its not pointer")
 	}
+	fmt.Println()
 }

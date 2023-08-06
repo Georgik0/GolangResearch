@@ -1,5 +1,0 @@
-package strings
-
-func main() {
-
-}
