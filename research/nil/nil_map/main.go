@@ -3,15 +3,16 @@ package main
 import (
 	"fmt"
 
-	"GolangResearch/research/nil/nil_map/test1"
+	read_non_existent_element "GolangResearch/research/nil/nil_map/read-non-existent-element"
 )
 
 func main() {
-	test1.Check()
+	//test1.Check()
 	//test2.Test()
 	//test1()
 	//test3.Check()
 	//test4.Check()
+	read_non_existent_element.Check()
 }
 
 type MyMAP map[int]int
