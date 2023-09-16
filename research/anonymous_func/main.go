@@ -20,5 +20,5 @@ func research1() {
 	}
 
 	modifier(f)
-	fmt.Println(i, str)
+	fmt.Println(i, str) // Out: 4 strstr
 }
