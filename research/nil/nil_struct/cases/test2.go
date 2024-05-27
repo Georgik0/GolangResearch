@@ -7,9 +7,19 @@ type A struct {
 }
 
 func Test2() {
-	a := &A{}
+	a := new(A)
 
 	if a.s == nil {
+		fmt.Println("s is NIL")
+	} else {
+		fmt.Println("s isn't NIL")
+	}
+
+	checkNilA(nil)
+}
+
+func checkNilA(obj *A) {
+	if obj.s == nil {
 		fmt.Println("s is NIL")
 	} else {
 		fmt.Println("s isn't NIL")

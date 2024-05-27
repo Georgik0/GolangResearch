@@ -6,7 +6,29 @@ import (
 )
 
 func main() {
-	researchConcurrentWriteInMap()
+	checkConcurrency()
+}
+
+func checkConcurrency() {
+	m := make(map[int]int, 6)
+	n := 10
+
+	mu := sync.Mutex{}
+	wg := sync.WaitGroup{}
+	wg.Add(n)
+	for i := 0; i < n; i++ {
+		go func(i int) {
+			defer wg.Done()
+
+			fmt.Println(i)
+
+			mu.Lock()
+			m[i] = i
+			mu.Unlock()
+		}(i)
+	}
+
+	wg.Wait()
 }
 
 func researchConcurrentWriteInMap() {

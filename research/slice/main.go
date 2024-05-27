@@ -1,10 +1,11 @@
 package main
 
 import (
-	ptr_on_slice_element "GolangResearch/research/slice/ptr-on-slice-element"
-	"GolangResearch/research/slice/tricks"
 	"fmt"
 	"sort"
+
+	research_slices "GolangResearch/research/slice/research-slices"
+	"GolangResearch/research/slice/tricks"
 )
 
 type metricsProvider struct {
@@ -37,7 +38,11 @@ func main() {
 	//test5()
 	//test6()
 	//slicecase1.CheckLen0()
-	ptr_on_slice_element.Check()
+	//ptr_on_slice_element.Check()
+	//init_slice.Check()
+	//change_slice_in_func.Check()
+	//change_slice_in_func.Check2()
+	research_slices.Research1()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

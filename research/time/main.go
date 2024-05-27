@@ -3,25 +3,12 @@ package main
 import (
 	"fmt"
 	"time"
+
+	current_time "GolangResearch/research/time/current-time"
 )
 
 func main() {
-	var zi interface{}
-
-	zi = i1
-	fmt.Println(zi)
-}
-
-func i1(a int, s string) float64 {
-	return 0
-}
-
-func myTimer(f func(interface{}, interface{}) float64) {
-
-}
-
-func research2() {
-
+	current_time.Research()
 }
 
 func research1() {

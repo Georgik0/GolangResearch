@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package hw;
+
+import "google/api/annotations.proto";
+option go_package = "larking.io/examples/api/helloworld;hw";
+
+service HelloWorld {
+  rpc Say(Req) returns (Res) {
+    option (google.api.http) = {
+      get : "/pong"
+    };
+  };
+}
+
+message Req {
+  bytes name = 1;
+}
+
+message Res {
+  string msg = 1;
+}

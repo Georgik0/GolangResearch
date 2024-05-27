@@ -4,13 +4,16 @@ import (
 	"fmt"
 	"sync"
 
-	map_concurrency "GolangResearch/research/concurrency/map-concurrency"
+	research_errgroup "GolangResearch/research/concurrency/research-errgroup"
 )
 
 func main() {
 	//case1.Check()
 	//test1()
-	map_concurrency.Check()
+	//map_concurrency.Check()
+	//slice_concurrency.Check()
+	//share_variable.Check2()
+	research_errgroup.Case()
 }
 
 func test1() {

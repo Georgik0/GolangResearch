@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"GolangResearch/research/chan/reading"
 )
 
 func main() {
-	err := test1()
-
-	fmt.Println(err)
+	//init_chan.Check()
+	reading.Check()
 }
 
 func test1() error {
