@@ -12,6 +12,7 @@ func Check() {
 
 type data struct {
 	end time.Duration
+	err error
 }
 
 func F() data {
@@ -19,11 +20,13 @@ func F() data {
 
 	start := time.Now()
 	defer func() {
-		d.end = time.Now().Sub(start)
-		fmt.Println("in F() d.end = ", d.end)
+		d.end = time.Since(start)
+		fmt.Printf("in F() d.end = %v; d.err = %v\n", d.end, d.err)
 	}()
 
-	time.Sleep(2)
+	time.Sleep(2 * time.Second)
+	d.err = fmt.Errorf("new error")
+
 	fmt.Println("out of F()")
 
 	return d

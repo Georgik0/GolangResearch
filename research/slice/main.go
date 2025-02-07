@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	research_slices "GolangResearch/research/slice/research-slices"
+	change_slice_in_func "GolangResearch/research/slice/change-slice-in-func"
 	"GolangResearch/research/slice/tricks"
 )
 
@@ -40,9 +40,10 @@ func main() {
 	//slicecase1.CheckLen0()
 	//ptr_on_slice_element.Check()
 	//init_slice.Check()
-	//change_slice_in_func.Check()
+	change_slice_in_func.Check()
 	//change_slice_in_func.Check2()
-	research_slices.Research1()
+	// research_slices.Research1()
+	//sortslices.CaseSortNotCoppiedSlice()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

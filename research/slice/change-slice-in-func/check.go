@@ -23,6 +23,7 @@ var arrGlobal = []data{
 }
 
 func Check() {
+	fmt.Println("before changePublicSlice public arrGlobal:", arrGlobal)
 	changePublicSlice(arrGlobal)
 	fmt.Println("after changePublicSlice public arrGlobal:", arrGlobal)
 }
